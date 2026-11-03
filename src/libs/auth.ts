@@ -1,8 +1,11 @@
-import NextAuth, { AuthOptions } from "next-auth";
+import { AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials"
 import userLogIn from "@/libs/userLogIn";
 
 export const authOptions:AuthOptions = {
+    pages: {
+        signIn: "/login",
+    },
     providers: [
         CredentialsProvider({
             // The name to display on the sign in form (e.g. 'Sign in with...')
@@ -15,7 +18,7 @@ export const authOptions:AuthOptions = {
                 email: { label: "Email", type: "email", placeholder: "email" },
                 password: { label: "Password", type: "password" }
             },
-            async authorize(credentials, req) {
+            async authorize(credentials) {
 
                 if (!credentials) return null;
 
@@ -35,8 +38,14 @@ export const authOptions:AuthOptions = {
         async jwt({token, user}) {
             return {...token, ...user}
         },
-        async session({session, token, user}) {
-            session.user = token as any;
+        async session({session, token}) {
+            session.user = {
+                _id: String(token.id ?? ""),
+                name: String(token.name ?? ""),
+                email: String(token.email ?? ""),
+                role: String(token.role ?? ""),
+                token: String(token.token ?? ""),
+            };
             return session;
         }
     }
