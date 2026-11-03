@@ -1,6 +1,7 @@
 export default async function userLogIn (userEmail: string, userPassword: string) {
+    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:5000";
     const response = await fetch(
-        'https://a08-venue-explorer-backend-3.vercel.app/api/v1/auth/login',
+        `${apiBaseUrl}/api/v1/auth/login`,
         {
             method: "POST",
             headers: 
@@ -14,5 +15,6 @@ export default async function userLogIn (userEmail: string, userPassword: string
     if (!response.ok) {
         throw new Error("Failed to log in. status:" + response.status);
     }
-    return await response.json();
+    const responseBody = await response.json();
+    return responseBody.data;
 }
