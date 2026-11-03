@@ -6,4 +6,8 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
 
+Backend repo: https://github.com/SWDevPrac2-69-1/PJ03-WorkshopRegist
+Tasks: https://docs.google.com/spreadsheets/d/1CJZCgeMpEHWGz_yNuJy05kloCy2H6AvRIunbcvfSFuA/edit?gid=403807176#gid=403807176
+
+This project create a frontend side to integrate with existing backend.
 <!-- END:nextjs-agent-rules -->
