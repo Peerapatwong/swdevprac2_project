@@ -13,23 +13,24 @@ export default async function TopMenu() {
         <div className="text-white flex flex-row-reverse fixed z-30 h-[50px] top-0 left-0 right-0 bg-slate-400 shadow-md text-justify">
            <Image src="/img/logo.png" alt="placeholder" width={50} height={10} sizes="100vh" className="h-full w-auto"/>
            
-           <TopMenuItem title="booking" pageRef="/booking"/>
+           <TopMenuItem title="Register Workshop" pageRef="/booking"/>
 
             <div className="w-full h-full justify-items-start flex flex-row text-md font-normal">           
-                <div className="w-[15%] h-full flex items-center p-5">
+                <div className="min-w-fit h-full flex items-center p-5">
                     {
                         session?
-                            <Link href="api/auth/signout">
+                            <Link href="/api/auth/signout">
                                 Sign-Out of {session.user.name}
                             </Link> :
-                            <Link href="api/auth/signin">
+                            <Link href="/api/auth/signin">
                                 Sign-In
                             </Link>
                     }
                 </div>
 
-                <div className="w-[15%] h-full flex items-center p-5">
-                    <Link href="/myBooking">My Booking</Link>
+                {!session && <div className="min-w-fit h-full flex items-center p-5"><Link href="/register">Create Account</Link></div>}
+                <div className="min-w-fit h-full flex items-center p-5">
+                    <Link href="/myBooking">Registrations</Link>
                 </div>
             </div>
 
