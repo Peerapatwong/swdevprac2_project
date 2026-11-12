@@ -24,11 +24,10 @@ interface UserProfile {
 }
 
 interface BookingItem {
-    nameLastname: string;
-    tel: string;
-    venue: string;
-    bookDate: string;
-  }
+  _id: string;
+  user: UserProfile | null;
+  workshop: WorkshopItem | null;
+}
 
 interface AuthUser {
   id: string;

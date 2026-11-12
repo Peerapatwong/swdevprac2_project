@@ -24,7 +24,8 @@ const storage = createPersistStorage();
 
 const persistConfig = {
     key: 'rootPersist',
-    storage
+    storage,
+    blacklist: ['bookSlice']
 };
 
 const rootReducer = combineReducers({bookSlice});

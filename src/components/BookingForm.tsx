@@ -1,93 +1,50 @@
 'use client'
 
-import DateReserve from "@/components/DateReserve";
-import { AppDispatch } from "@/redux/store";
-import { MenuItem, Select, TextField } from "@mui/material";
-import { Dayjs } from "dayjs";
-import { FormEvent, useState } from "react";
-import { useDispatch } from "react-redux";
-import { addBooking } from "@/redux/features/bookSlice"
+import { MenuItem, TextField } from "@mui/material";
+import { FormEvent, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
+import { saveRegistration } from "@/libs/workshopActions";
 
-export default function BookingForm() {
-    
-    const [name, setName] = useState<string>();
-    const [contact, setContact] = useState<string>();
-    const [reserveDate, setReserveDate] = useState<Dayjs | null>(null);
-    const [venue, setVenue] = useState<string>("Bloom");
-
-    const dispatch = useDispatch<AppDispatch>();
+export default function BookingForm({ workshops, profile, selectedId = "" }: {
+    workshops: WorkshopItem[];
+    profile: UserProfile;
+    selectedId?: string;
+}) {
+    const [workshopId, setWorkshopId] = useState(selectedId);
+    const [busy, startTransition] = useTransition();
+    const router = useRouter();
+    const selected = workshops.find(item => item._id === workshopId);
 
     const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-
-        if (!name || !contact || !reserveDate || !venue) {
-            alert("Please fill the form");
-            return;
-        }
-
-        const item: BookingItem = {
-            nameLastname: name,
-            tel: contact,
-            venue,
-            bookDate: reserveDate.format("YYYY/MM/DD"),
-        };
-
-        dispatch(addBooking(item));
-        alert("Booked!");
+        if (!workshopId || busy) return;
+        startTransition(async () => {
+            try {
+                const result = await saveRegistration(workshopId);
+                if (!result.success) { alert(result.error); return; }
+                alert("Registered!");
+                router.push("/myBooking");
+                router.refresh();
+            } catch { alert("Cannot register. Please try again."); }
+        });
     };
 
     return (
-        <form className="w-full min-h-[calc(100vh-50px)] flex flex-col gap-y-5 justify-center items-center py-10 px-4 bg-slate-500"
-        onSubmit={handleSubmit}>
-            
+        <form className="w-full min-h-[calc(100vh-50px)] flex flex-col gap-y-5 justify-center items-center py-10 px-4 bg-slate-500" onSubmit={handleSubmit}>
             <div className="w-full max-w-md bg-white rounded-xl shadow-lg flex flex-col items-center justify-center p-8 space-y-6">
-                <div className="text-2xl font-bold text-gray-800 text-center">
-                    Venue Booking
-                </div>
-
+                <div className="text-2xl font-bold text-gray-800 text-center">Workshop Registration</div>
                 <div className="w-full flex flex-col space-y-4">
-                    <TextField 
-                        variant="standard" 
-                        name="Name-Lastname" 
-                        label="Name-Lastname" 
-                        className="w-full"
-                        onChange={(event) => {setName(event.target.value);}}
-                        required
-                    />
-                    <TextField 
-                        variant="standard" 
-                        name="Contact-Number" 
-                        label="Contact-Number" 
-                        className="w-full"
-                        onChange={(event) => {setContact(event.target.value);}}
-                        required
-                    />
+                    <TextField variant="standard" label="Name" value={profile.name} disabled />
+                    <TextField variant="standard" label="Contact Number" value={profile.tel} disabled />
+                    <TextField variant="standard" label="Workshop" select value={workshopId} onChange={event => setWorkshopId(event.target.value)} required disabled={busy}>
+                        <MenuItem value="" disabled>Select Workshop</MenuItem>
+                        {workshops.map(item => <MenuItem key={item._id} value={item._id}>{item.name} — {item.workshopDate.slice(0, 10)}</MenuItem>)}
+                    </TextField>
+                    {selected && <TextField variant="standard" label="Workshop Date" value={selected.workshopDate.slice(0, 10)} disabled />}
+                    {!workshops.length && <p>No upcoming workshops available.</p>}
                 </div>
-
-                <div className="w-full">
-                    <Select 
-                        variant="standard" 
-                        id="venue" 
-                        defaultValue="Bloom"
-                        className="w-full text-left"
-                        onChange={(event) => {setVenue(event.target.value);}}
-                    >
-                        <MenuItem value="Bloom">The Bloom Pavilion</MenuItem>
-                        <MenuItem value="Spark">Spark Space</MenuItem>
-                        <MenuItem value="GrandTable">The Grand Table</MenuItem>
-                    </Select>
-                </div>
-
-                <div className="w-full">
-                    <DateReserve onDateChange={(value:Dayjs | null) => {setReserveDate(value);}} />
-                </div>
-
-                <button 
-                type="submit" 
-                name="Book Venue"
-                className="w-full bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white font-medium py-2.5 px-4 rounded-lg shadow-md hover:shadow-lg transition duration-200 ease-in-out cursor-pointer"
-                >
-                    Book Venue
+                <button type="submit" name="Register Workshop" disabled={busy || !workshopId} className="w-full bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white font-medium py-2.5 px-4 rounded-lg shadow-md hover:shadow-lg transition duration-200 ease-in-out cursor-pointer disabled:opacity-50">
+                    {busy ? "Registering…" : "Register Workshop"}
                 </button>
             </div>
         </form>

@@ -23,6 +23,18 @@ async function authenticatedRequest<T>(path: string, method: string, body?: unkn
     }
 }
 
+export async function saveRegistration(workshop: string, id?: string): Promise<ActionResult<BookingItem>> {
+    if (!/^[a-fA-F0-9]{24}$/.test(workshop) || (id !== undefined && !/^[a-fA-F0-9]{24}$/.test(id))) {
+        return { success: false, error: "Invalid registration or workshop ID." };
+    }
+    return authenticatedRequest<BookingItem>(id ? `registrations/${id}` : "registrations", id ? "PUT" : "POST", { workshop }, id ? undefined : "member");
+}
+
+export async function deleteRegistration(id: string): Promise<ActionResult<unknown>> {
+    if (!/^[a-fA-F0-9]{24}$/.test(id)) return { success: false, error: "Invalid registration ID." };
+    return authenticatedRequest(`registrations/${id}`, "DELETE");
+}
+
 export async function saveWorkshop(input: Pick<WorkshopItem, "name" | "description" | "instructor" | "workshopDate" | "location" | "capacity">, id?: string): Promise<ActionResult<WorkshopItem>> {
     if (id !== undefined && !/^[a-fA-F0-9]{24}$/.test(id)) return { success: false, error: "Invalid workshop ID." };
     const { name, description, instructor, workshopDate, location, capacity } = input;
