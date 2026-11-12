@@ -1,30 +1,19 @@
-interface VenueItem {
-    _id: string,
-    name: string,
-    address: string,
-    district: string,
-    province: string,
-    postalcode: string,
-    tel: string,
-    picture: string,
-    dailyrate: number,
-    __v: number,
-    id: string
-  }
-  
-  interface VenueJson {
-    success: boolean,
-    count: number,
-    pagination: Object,
-    data: VenueItem[]
-  }
+interface WorkshopItem {
+  _id: string;
+  name: string;
+  description: string;
+  instructor: string;
+  workshopDate: string;
+  location: string;
+  capacity: number;
+  isActive: boolean;
+}
 
-  interface BookingItem {
-    nameLastname: string;
-    tel: string;
-    venue: string;
-    bookDate: string;
-  }
+interface WorkshopJson {
+  success: boolean;
+  count: number;
+  data: WorkshopItem[];
+}
 
 interface UserProfile {
   _id: string;
@@ -33,6 +22,13 @@ interface UserProfile {
   tel: string;
   role: "admin" | "member";
 }
+
+interface BookingItem {
+    nameLastname: string;
+    tel: string;
+    venue: string;
+    bookDate: string;
+  }
 
 interface AuthUser {
   id: string;

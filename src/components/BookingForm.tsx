@@ -79,7 +79,7 @@ export default function BookingForm() {
                 </div>
 
                 <div className="w-full">
-                    <DateReserve onDateChange={(value:Dayjs) => {setReserveDate(value);}} />
+                    <DateReserve onDateChange={(value:Dayjs | null) => {setReserveDate(value);}} />
                 </div>
 
                 <button 
