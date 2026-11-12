@@ -25,3 +25,21 @@ interface VenueItem {
     venue: string;
     bookDate: string;
   }
+
+interface UserProfile {
+  _id: string;
+  name: string;
+  email: string;
+  tel: string;
+  role: "admin" | "member";
+}
+
+interface AuthUser {
+  id: string;
+  name: string;
+  email: string;
+  role: "admin" | "member";
+  token: string;
+}
+
+type ActionResult<T> = { success: true; data: T } | { success: false; error: string };
