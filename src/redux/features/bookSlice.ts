@@ -2,46 +2,29 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 type BookState = {
     bookItems: BookingItem[];
+    ownerId: string;
+    source: string;
 };
 
-const initialState: BookState = { bookItems: []};
+const initialState: BookState = { bookItems: [], ownerId: "", source: "" };
 
 export const bookSlice = createSlice({
     name: "booking",
     initialState,
     reducers: {
-        addBooking: (state, action:PayloadAction<BookingItem>) => {
-            
-            const index = state.bookItems.findIndex(
-                (item) =>
-                    item.bookDate === action.payload.bookDate
-            );
-
-            if (index !== -1) {
-                state.bookItems[index] = action.payload; // replace if that day is already booked
-            } else {
-                state.bookItems.push(action.payload); 
-            }
+        setBookings: (state, action: PayloadAction<BookState>) => {
+            Object.assign(state, action.payload);
         },
-
-        removeBooking: (state, action:PayloadAction<BookingItem>) => {
-            
-            const { nameLastname, tel, venue, bookDate } = action.payload;
-            
-            const index = state.bookItems.findIndex(
-                (item) =>
-                    item.nameLastname === nameLastname &&
-                    item.tel === tel &&
-                    item.venue === venue &&
-                    item.bookDate === bookDate
-            );
-
-            if (index !== -1) {
-                state.bookItems.splice(index, 1);
-            }
+        addBooking: (state, action: PayloadAction<BookingItem>) => {
+            const index = state.bookItems.findIndex(item => item._id === action.payload._id);
+            if (index !== -1) state.bookItems[index] = action.payload;
+            else state.bookItems.push(action.payload);
+        },
+        removeBooking: (state, action: PayloadAction<BookingItem>) => {
+            state.bookItems = state.bookItems.filter(item => item._id !== action.payload._id);
         }
     }
 });
 
-export const { addBooking, removeBooking } = bookSlice.actions;
+export const { setBookings, addBooking, removeBooking } = bookSlice.actions;
 export default bookSlice.reducer;

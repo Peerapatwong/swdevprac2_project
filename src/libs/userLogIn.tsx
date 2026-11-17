@@ -1,18 +1,9 @@
-export default async function userLogIn (userEmail: string, userPassword: string) {
-    const response = await fetch(
-        'https://a08-venue-explorer-backend-3.vercel.app/api/v1/auth/login',
-        {
-            method: "POST",
-            headers: 
-            {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ email: userEmail, password: userPassword })
-        }
-    );
+import backend from "./backend";
 
-    if (!response.ok) {
-        throw new Error("Failed to log in. status:" + response.status);
-    }
-    return await response.json();
+export default async function userLogIn(userEmail: string, userPassword: string) {
+  const response = await backend<AuthUser>("auth/login", {
+    method: "POST",
+    body: JSON.stringify({ email: userEmail.trim().toLowerCase(), password: userPassword }),
+  });
+  return response.data;
 }

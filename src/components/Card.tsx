@@ -6,18 +6,18 @@ import { Rating } from "@mui/material";
 import Link from "next/link";
 
 interface CardProps {
-    vid: string
-    venueName: string;
+    wid: string
+    workshopName: string;
     imgSrc: string;
     onRatingChange?: (newRating: number | null) => void; 
 }
 
-export default function Card({ vid, venueName, imgSrc, onRatingChange } : CardProps) {
-    const ratingName:string = venueName + " Rating";
+export default function Card({ wid, workshopName, imgSrc, onRatingChange } : CardProps) {
+    const ratingName:string = workshopName + " Rating";
     return (
         <InteractiveCard>
             <div className="w-full h-[60%] relative bg-white hover:cursor-pointer">
-                <Link href={`/venue/${vid}`}>
+                <Link href={`/workshop/${wid}`}>
                     <Image
                         src={imgSrc}
                         alt="placeholder"
@@ -29,7 +29,7 @@ export default function Card({ vid, venueName, imgSrc, onRatingChange } : CardPr
                     
                 <div className="absolute top-[145px] m-[5px]">
                     <h3 className="text-white break-all text-xl m-0 [text-shadow:0_0_10px_rgba(0,0,0,0.8),0_0_20px_rgba(0,0,0,0.6),0_0_30px_rgba(0,0,0,0.4)]">
-                        {venueName}
+                        <Link href={`/workshop/${wid}`}>{workshopName}</Link>
                     </h3>
                 </div>
             </div>

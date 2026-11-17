@@ -1,27 +1,40 @@
-interface VenueItem {
-    _id: string,
-    name: string,
-    address: string,
-    district: string,
-    province: string,
-    postalcode: string,
-    tel: string,
-    picture: string,
-    dailyrate: number,
-    __v: number,
-    id: string
-  }
-  
-  interface VenueJson {
-    success: boolean,
-    count: number,
-    pagination: Object,
-    data: VenueItem[]
-  }
+interface WorkshopItem {
+  _id: string;
+  name: string;
+  description: string;
+  instructor: string;
+  workshopDate: string;
+  location: string;
+  capacity: number;
+  isActive: boolean;
+}
 
-  interface BookingItem {
-    nameLastname: string;
-    tel: string;
-    venue: string;
-    bookDate: string;
-  }
+interface WorkshopJson {
+  success: boolean;
+  count: number;
+  data: WorkshopItem[];
+}
+
+interface UserProfile {
+  _id: string;
+  name: string;
+  email: string;
+  tel: string;
+  role: "admin" | "member";
+}
+
+interface BookingItem {
+  _id: string;
+  user: UserProfile | null;
+  workshop: WorkshopItem | null;
+}
+
+interface AuthUser {
+  id: string;
+  name: string;
+  email: string;
+  role: "admin" | "member";
+  token: string;
+}
+
+type ActionResult<T> = { success: true; data: T } | { success: false; error: string };

@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
 
-const reqText: string = "where every event finds its venue";
+const reqText: string = "where every interest finds its workshop";
 const announceText: string = "Find the one that suits you";
 
 const covers = ['cover.jpg', 'cover2.jpg', 'cover3.jpg', 'cover4.jpg'];
@@ -39,8 +39,8 @@ export default function Banner() {
 
             {/* Link: pinned to the bottom-right corner of the banner */}
             <div className="absolute bottom-0 right-0 z-20 p-10 text-white text-3xl text-shadow-lg">
-                <Link href='/venue' onClick={(e) => e.stopPropagation()}>
-                    Select Venue
+                <Link href='/workshop' onClick={(e) => e.stopPropagation()}>
+                    Select Workshop
                 </Link>
             </div>
         </div>
