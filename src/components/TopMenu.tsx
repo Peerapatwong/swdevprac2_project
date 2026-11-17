@@ -26,7 +26,7 @@ export default async function TopMenu() {
                             <Link href="/api/auth/signout">
                                 Sign-Out of {session.user.name}
                             </Link> :
-                            <Link href="/api/auth/signin">
+                            <Link href="/register/login">
                                 Sign-In
                             </Link>
                     }

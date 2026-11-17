@@ -1,5 +1,5 @@
 .page {
-  --background: inherit;
+  --background: #62748e;
   --foreground: #fff;
 
   --text-primary: #ffffff;
@@ -15,7 +15,7 @@
   align-items: center;
   justify-content: center;
   font-family: var(--font-geist-sans);
-  background-color: transparent;
+  background-color: var(--background);
 }
 
 .main {
