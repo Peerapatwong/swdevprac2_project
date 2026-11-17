@@ -7,6 +7,7 @@ interface WorkshopItem {
   location: string;
   capacity: number;
   isActive: boolean;
+  registrationCount?: number;
 }
 
 interface WorkshopJson {
