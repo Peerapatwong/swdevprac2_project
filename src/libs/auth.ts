@@ -3,7 +3,14 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import userLogIn from "@/libs/userLogIn";
 import backend from "@/libs/backend";
 
+const authSecret = process.env.NEXTAUTH_SECRET ?? process.env.AUTH_SECRET;
+
+if (!authSecret) {
+    throw new Error("NEXTAUTH_SECRET (or AUTH_SECRET) must be configured.");
+}
+
 export const authOptions: AuthOptions = {
+    secret: authSecret,
     providers: [
         CredentialsProvider({
             name: "Credentials",
