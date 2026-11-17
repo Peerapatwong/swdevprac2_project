@@ -1,9 +1,15 @@
 'use client'
 import React from 'react'
 
-export default function InteractiveCard({ children }: { children: React.ReactNode }) {
-    function onMouseOver(e: React.SyntheticEvent) {
-        if (e.type === 'mouseover') {
+export default function InteractiveCard({
+    children,
+    className = "w-[250px] h-[300px]",
+}: {
+    children: React.ReactNode;
+    className?: string;
+}) {
+    function setHovered(e: React.SyntheticEvent, hovered: boolean) {
+        if (hovered) {
             e.currentTarget.classList.remove('shadow-lg')
             e.currentTarget.classList.remove('bg-white')
             e.currentTarget.classList.add('shadow-2xl')
@@ -18,9 +24,9 @@ export default function InteractiveCard({ children }: { children: React.ReactNod
     
     return (
         <div
-            className="w-[250px] h-[300px] rounded-lg shadow-lg bg-white overflow-hidden"
-            onMouseOver={onMouseOver}
-            onMouseOut={onMouseOver}
+            className={`${className} overflow-hidden rounded-lg bg-white shadow-lg transition-[background-color,box-shadow,transform] duration-200`}
+            onMouseEnter={(event) => setHovered(event, true)}
+            onMouseLeave={(event) => setHovered(event, false)}
         >
             {children}
         </div>
