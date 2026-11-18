@@ -1,20 +1,23 @@
 'use client'
 
-import { removeBooking, setBookings } from "@/redux/features/bookSlice";
+import { addBooking, removeBooking, setBookings } from "@/redux/features/bookSlice";
 import { AppDispatch, useAppSelector } from "@/redux/store";
 import { useDispatch } from "react-redux";
-import { useEffect, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useSession } from "next-auth/react";
-import { deleteRegistration } from "@/libs/workshopActions";
+import { deleteRegistration, saveRegistration } from "@/libs/workshopActions";
 import WorkshopCard from "./WorkshopCard";
 
-export default function BookingList({ initialBookings, userId, admin }: {
-    initialBookings: BookingItem[]; userId: string; admin: boolean;
+export default function BookingList({ initialBookings, userId, admin, workshops }: {
+    initialBookings: BookingItem[]; userId: string; admin: boolean; workshops: WorkshopItem[] | null;
 }) {
     const cache = useAppSelector(state => state.bookSlice);
     const dispatch = useDispatch<AppDispatch>();
     const { data: session } = useSession();
     const [busy, startTransition] = useTransition();
+    const [editingId, setEditingId] = useState<string | null>(null);
+    const [selectedWorkshopId, setSelectedWorkshopId] = useState("");
+    const [editError, setEditError] = useState("");
     const source = JSON.stringify(initialBookings);
     const bookingItems = cache.ownerId === userId && cache.source === source ? cache.bookItems : initialBookings;
     useEffect(() => {
@@ -23,6 +26,18 @@ export default function BookingList({ initialBookings, userId, admin }: {
 
     const today = new Date().toISOString().slice(0, 10);
     const isActive = (item: BookingItem) => !!item.workshop?.isActive && item.workshop.workshopDate.slice(0, 10) >= today;
+    function save(item: BookingItem) {
+        if (busy || !selectedWorkshopId || selectedWorkshopId === item.workshop?._id) return;
+        setEditError("");
+        startTransition(async () => {
+            try {
+                const result = await saveRegistration(selectedWorkshopId, item._id);
+                if (!result.success) { setEditError(result.error); return; }
+                dispatch(addBooking(result.data));
+                setEditingId(null);
+            } catch { setEditError("Cannot update registration. Please try again."); }
+        });
+    }
     function remove(item: BookingItem) {
         startTransition(async () => {
             try {
@@ -49,6 +64,9 @@ export default function BookingList({ initialBookings, userId, admin }: {
                         </p>
                     )}
                 </header>
+
+                {!workshops && <p role="alert" className="mt-6 text-center text-red-300">Cannot load workshops for editing. Please reload this page.</p>}
+                {workshops?.length === 0 && <p className="mt-6 text-center text-slate-300">No upcoming workshops available for editing.</p>}
 
                 {bookingItems.length === 0 ? (
                     <div className="mt-16 rounded-lg bg-slate-800 p-8 text-center text-slate-200">
@@ -77,6 +95,42 @@ export default function BookingList({ initialBookings, userId, admin }: {
                                     <div className="rounded-lg bg-slate-800 p-6 text-slate-300 shadow-lg">
                                         Workshop unavailable
                                     </div>
+                                )}
+                                {editingId === item._id ? (
+                                    <form className="mt-3 rounded-lg bg-slate-800 p-4" onSubmit={event => { event.preventDefault(); save(item); }}>
+                                        <label htmlFor={`registration-workshop-${item._id}`} className="block text-sm font-medium">Change Workshop</label>
+                                        <select
+                                            id={`registration-workshop-${item._id}`}
+                                            value={selectedWorkshopId}
+                                            onChange={event => { setSelectedWorkshopId(event.target.value); setEditError(""); }}
+                                            disabled={busy}
+                                            required
+                                            className="mt-2 w-full rounded-md bg-white p-2 text-slate-950"
+                                        >
+                                            <option value="" disabled>Select Workshop</option>
+                                            {workshops?.map(workshop => (
+                                                <option key={workshop._id} value={workshop._id}>{workshop.name} — {workshop.workshopDate.slice(0, 10)}</option>
+                                            ))}
+                                        </select>
+                                        {editError && <p role="alert" className="mt-2 text-sm text-red-300">{editError}</p>}
+                                        <div className="mt-3 flex gap-3">
+                                            <button type="submit" disabled={busy || !selectedWorkshopId || selectedWorkshopId === item.workshop?._id} className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50">{busy ? "Saving…" : "Save Changes"}</button>
+                                            <button type="button" disabled={busy} onClick={() => setEditingId(null)} className="rounded-md bg-slate-700 px-4 py-2 text-sm font-medium hover:bg-slate-600 disabled:opacity-50">Cancel</button>
+                                        </div>
+                                    </form>
+                                ) : (
+                                    <button
+                                        type="button"
+                                        disabled={busy || !workshops?.length}
+                                        onClick={() => {
+                                            setEditingId(item._id);
+                                            setSelectedWorkshopId(workshops?.some(workshop => workshop._id === item.workshop?._id) ? item.workshop!._id : "");
+                                            setEditError("");
+                                        }}
+                                        className="mt-3 w-full rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+                                    >
+                                        Edit Registration
+                                    </button>
                                 )}
                             </div>
                         ))}
