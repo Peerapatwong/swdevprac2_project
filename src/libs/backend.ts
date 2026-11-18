@@ -1,7 +1,7 @@
 import "server-only";
 
 export default async function backend<T>(path: string, options: RequestInit = {}): Promise<{ success: true; data: T; count: number }> {
-  const response = await fetch(`${(process.env.BACKEND_URL || "http://localhost:5000").replace(/\/$/, "")}/api/v1/${path}`, {
+  const response = await fetch(`${(process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000").replace(/\/$/, "")}/api/v1/${path}`, {
     ...options,
     headers: { "Content-Type": "application/json", ...options.headers },
     cache: "no-store",
