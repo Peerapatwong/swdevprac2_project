@@ -49,6 +49,17 @@ export default function BookingList({ initialBookings, userId, admin, workshops 
     }
     if (session?.user.id !== userId) return <p className="m-10">Please sign in to view registrations.</p>;
     const activeCount = bookingItems.filter(isActive).length;
+    const registrationGroups = new Map<string, { user: UserProfile | null; items: BookingItem[] }>();
+    if (admin) {
+        for (const item of bookingItems) {
+            const memberId = item.user?._id ?? `unavailable-${item._id}`;
+            const group = registrationGroups.get(memberId);
+            if (group) group.items.push(item);
+            else registrationGroups.set(memberId, { user: item.user, items: [item] });
+        }
+    } else {
+        registrationGroups.set(userId, { user: null, items: bookingItems });
+    }
 
     return (
         <main className="min-h-[calc(100vh-4rem)] bg-slate-900 px-6 py-12 text-white">
@@ -73,43 +84,46 @@ export default function BookingList({ initialBookings, userId, admin, workshops 
                         No workshop registrations yet.
                     </div>
                 ) : (
-                    <div className="mt-16 flex flex-wrap justify-center gap-6">
-                        {bookingItems.map(item => (
-                            <div key={item._id} className="w-full max-w-md">
+                    <div className="mt-16 space-y-10">
+                        {Array.from(registrationGroups, ([memberId, group]) => (
+                            <section key={memberId}>
                                 {admin && (
-                                    <div className="mb-2 text-sm text-slate-300">
-                                        <span className="font-semibold text-white">{item.user?.name || "Member unavailable"}</span>
-                                        {item.user?.email && <span> · {item.user.email}</span>}
-                                    </div>
+                                    <header className="mb-5 border-b border-slate-700 pb-3">
+                                        <h2 className="text-xl font-semibold text-white">{group.user?.name || "Member unavailable"}</h2>
+                                        {group.user?.email && <p className="mt-1 text-sm text-slate-300">{group.user.email}</p>}
+                                    </header>
                                 )}
-                                {item.workshop ? (
-                                    <WorkshopCard
-                                        workshop={item.workshop}
-                                        action="remove"
-                                        detailsHref={`/workshop/${item.workshop._id}`}
-                                        disabled={busy}
-                                        onAction={() => remove(item)}
-                                        className="min-h-48"
-                                    />
-                                ) : (
-                                    <div className="rounded-lg bg-slate-800 p-6 text-slate-300 shadow-lg">
-                                        Workshop unavailable
-                                    </div>
-                                )}
-                                {editingId === item._id ? (
-                                    <form className="mt-3 rounded-lg bg-slate-800 p-4" onSubmit={event => { event.preventDefault(); save(item); }}>
-                                        <label htmlFor={`registration-workshop-${item._id}`} className="block text-sm font-medium">Change Workshop</label>
-                                        <select
-                                            id={`registration-workshop-${item._id}`}
-                                            value={selectedWorkshopId}
-                                            onChange={event => { setSelectedWorkshopId(event.target.value); setEditError(""); }}
-                                            disabled={busy}
-                                            required
-                                            className="mt-2 w-full rounded-md bg-white p-2 text-slate-950"
-                                        >
-                                            <option value="" disabled>Select Workshop</option>
-                                            {workshops?.map(workshop => (
-                                                <option key={workshop._id} value={workshop._id}>{workshop.name} — {workshop.workshopDate.slice(0, 10)}</option>
+                                <div className="flex flex-wrap justify-center gap-6">
+                                    {group.items.map(item => (
+                                        <div key={item._id} className="w-full max-w-md">
+                                            {item.workshop ? (
+                                                <WorkshopCard
+                                                    workshop={item.workshop}
+                                                    action="remove"
+                                                    detailsHref={`/workshop/${item.workshop._id}`}
+                                                    disabled={busy}
+                                                    onAction={() => remove(item)}
+                                                    className="min-h-48"
+                                                />
+                                            ) : (
+                                                <div className="rounded-lg bg-slate-800 p-6 text-slate-300 shadow-lg">
+                                                    Workshop unavailable
+                                                </div>
+                                            )}
+                                            {editingId === item._id ? (
+                                                <form className="mt-3 rounded-lg bg-slate-800 p-4" onSubmit={event => { event.preventDefault(); save(item); }}>
+                                                    <label htmlFor={`registration-workshop-${item._id}`} className="block text-sm font-medium">Change Workshop</label>
+                                                    <select
+                                                        id={`registration-workshop-${item._id}`}
+                                                        value={selectedWorkshopId}
+                                                        onChange={event => { setSelectedWorkshopId(event.target.value); setEditError(""); }}
+                                                        disabled={busy}
+                                                        required
+                                                        className="mt-2 w-full rounded-md bg-white p-2 text-slate-950"
+                                                    >
+                                                        <option value="" disabled>Select Workshop</option>
+                                                        {workshops?.map(workshop => (
+                                                            <option key={workshop._id} value={workshop._id}>{workshop.name} — {workshop.workshopDate.slice(0, 10)}</option>
                                             ))}
                                         </select>
                                         {editError && <p role="alert" className="mt-2 text-sm text-red-300">{editError}</p>}
@@ -133,6 +147,9 @@ export default function BookingList({ initialBookings, userId, admin, workshops 
                                     </button>
                                 )}
                             </div>
+                                    ))}
+                                </div>
+                            </section>
                         ))}
                     </div>
                 )}
