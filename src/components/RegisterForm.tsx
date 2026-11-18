@@ -40,7 +40,7 @@ export default function RegisterForm() {
                     </TextField>
                     <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2.5 px-4 rounded-lg disabled:opacity-50" type="submit">{busy ? "Creating…" : "Create Account"}</button>
                 </fieldset>
-                <Link href="/api/auth/signin" className="block text-center text-blue-600">Sign In</Link>
+                <Link href="/register/login" className="block text-center text-blue-600">Sign In</Link>
             </div>
         </form>
     );

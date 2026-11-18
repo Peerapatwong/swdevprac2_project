@@ -1,4 +1,3 @@
-import Image from "next/image";
 import TopMenuItem from "./TopMenuItem";
 import Link from "next/link";
 import { getServerSession } from "next-auth";
@@ -6,39 +5,46 @@ import { authOptions } from "@/libs/auth";
 
 
 export default async function TopMenu() {
-
     const session = await getServerSession(authOptions);
     const isAdmin = session?.user.role === "admin";
 
-    return(
-        <div className="text-white flex flex-row-reverse fixed z-30 h-[50px] top-0 left-0 right-0 bg-slate-400 shadow-md text-justify">
-           <Image src="/img/logo.png" alt="placeholder" width={50} height={10} sizes="100vh" className="h-full w-auto"/>
-           
-           <TopMenuItem
-               title={isAdmin ? "Create Workshop" : "Register Workshop"}
-               pageRef={isAdmin ? "/workshop/manage" : "/booking"}
-           />
+    return (
+        <nav className="fixed inset-x-0 top-0 z-30 h-16 bg-slate-300 text-slate-950 shadow-md">
+            <div className="flex h-full min-w-max items-center justify-between gap-8 px-9">
+                <Link href="/" className="text-lg font-bold tracking-tight">
+                    Workshop Explorer
+                </Link>
 
-            <div className="w-full h-full justify-items-start flex flex-row text-md font-normal">           
-                <div className="min-w-fit h-full flex items-center p-5">
-                    {
-                        session?
-                            <Link href="/api/auth/signout">
-                                Sign-Out of {session.user.name}
-                            </Link> :
-                            <Link href="/api/auth/signin">
-                                Sign-In
+                <div className="flex h-full items-center gap-1 text-sm font-medium">
+                    <TopMenuItem
+                        title="Workshops"
+                        pageRef="/workshop"
+                        includeSubpaths
+                        excludedSubpaths={["/workshop/manage"]}
+                    />
+                    <TopMenuItem title="Registrations" pageRef="/myBooking" />
+
+                    {session ? (
+                        <>
+                            <TopMenuItem
+                                title={isAdmin ? "Create Workshop" : "Register Workshop"}
+                                pageRef={isAdmin ? "/workshop/manage" : "/booking"}
+                            />
+                            <Link
+                                href="/api/auth/signout"
+                                className="flex h-full min-w-fit items-center px-5 transition-colors hover:bg-slate-200"
+                            >
+                                Sign Out{session.user.name ? ` · ${session.user.name}` : ""}
                             </Link>
-                    }
-                </div>
-
-                {!session && <div className="min-w-fit h-full flex items-center p-5"><Link href="/register">Create Account</Link></div>}
-                {isAdmin && <div className="min-w-fit h-full flex items-center p-5"><Link href="/workshop">Workshops</Link></div>}
-                <div className="min-w-fit h-full flex items-center p-5">
-                    <Link href="/myBooking">Registrations</Link>
+                        </>
+                    ) : (
+                        <>
+                            <TopMenuItem title="Sign In" pageRef="/register/login" />
+                            <TopMenuItem title="Create Account" pageRef="/register" />
+                        </>
+                    )}
                 </div>
             </div>
-
-        </div>
+        </nav>
     );
 }

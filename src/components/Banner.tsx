@@ -1,48 +1,26 @@
-'use client'
-
-import { useSession } from 'next-auth/react';
-import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
-
-const reqText: string = "where every interest finds its workshop";
-const announceText: string = "Find the one that suits you";
-
-const covers = ['cover.jpg', 'cover2.jpg', 'cover3.jpg', 'cover4.jpg'];
 
 export default function Banner() {
-    const [index, setIndex] = useState(0);
-    const { data : session } = useSession();
-
     return (
-        <div
-            className="relative block m-0 w-full h-[80vh] cursor-pointer overflow-hidden"
-            onClick={() => setIndex((index + 1) % covers.length)}
-        >
-            <Image
-                src={`/img/${covers[index]}`}
-                alt='placeholder'
-                fill={true}
-                className="object-cover"
-                priority
-            />
+        <section className="relative flex min-h-[clamp(34rem,68vh,46rem)] w-full overflow-hidden bg-[linear-gradient(45deg,#0f172a_0%,#1e293b_42%,#4f6fa3_100%)] text-white">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(255,255,255,0.12),transparent_36%)]" />
 
-            <div className="absolute top-0 right-0 z-20 text-center text-white text-2xl m-5 text-shadow-lg">
-                { session? `Welcome ${session.user.name}` : null }
+            <div className="relative z-10 mx-auto flex w-full max-w-7xl items-center px-8 py-20 sm:px-12 lg:px-16">
+                <div className="max-w-3xl">
+                    <h1 className="max-w-2xl text-5xl font-bold leading-[1.05] tracking-tight sm:text-6xl">
+                        Where every interest finds its workshop
+                    </h1>
+                    <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-200">
+                        Find the one that suits you. Learn from experts and meet people who share your curiosity.
+                    </p>
+                    <Link
+                        href="/workshop"
+                        className="mt-8 inline-flex rounded-md bg-blue-600 px-6 py-3 font-medium text-white shadow-lg transition hover:bg-blue-700"
+                    >
+                        Select Workshop
+                    </Link>
+                </div>
             </div>
-
-            {/* Headline: pinned at 20% from the top of the banner */}
-            <div className="absolute inset-x-0 top-[20%] z-20 text-center text-white text-3xl [text-shadow:_0_0_10px_rgba(0,0,0,0.8),_0_0_20px_rgba(0,0,0,0.6),_0_0_30px_rgba(0,0,0,0.4)] pointer-events-none">
-                <h1>{reqText}</h1>
-                <h3 className="text-2xl">{announceText}</h3>
-            </div>
-
-            {/* Link: pinned to the bottom-right corner of the banner */}
-            <div className="absolute bottom-0 right-0 z-20 p-10 text-white text-3xl text-shadow-lg">
-                <Link href='/workshop' onClick={(e) => e.stopPropagation()}>
-                    Select Workshop
-                </Link>
-            </div>
-        </div>
+        </section>
     );
 }

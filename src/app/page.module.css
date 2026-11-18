@@ -1,5 +1,5 @@
 .page {
-  --background: inherit;
+  --background: #62748e;
   --foreground: #fff;
 
   --text-primary: #ffffff;
@@ -13,18 +13,18 @@
   flex: 1;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   font-family: var(--font-geist-sans);
-  background-color: transparent;
+  background-color: var(--background);
 }
 
 .main {
   display: flex;
-  flex: 1;
+  flex: none;
   width: 100%;
   flex-direction: column;
   align-items: flex-start;
-  justify-content: space-between;
+  justify-content: flex-start;
   background-color: transparent;
   padding: 0;
 }

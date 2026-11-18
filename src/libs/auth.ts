@@ -11,6 +11,9 @@ if (!authSecret) {
 
 export const authOptions: AuthOptions = {
     secret: authSecret,
+    pages: {
+        signIn: "/register/login",
+    },
     providers: [
         CredentialsProvider({
             name: "Credentials",
